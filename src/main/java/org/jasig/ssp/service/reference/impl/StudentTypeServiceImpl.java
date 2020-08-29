@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 /**
  * StudentType service implementation
  * 
@@ -61,5 +63,16 @@ public class StudentTypeServiceImpl extends
 	public StudentType getByCode(@NotNull final String code) 
 			throws ObjectNotFoundException {
 		return this.dao.getByCode(code);
+	}
+
+	public StudentType getOrException(@NotNull UUID id) throws ObjectNotFoundException {
+		StudentType studentType = super.get(id);
+		if(studentType == null){
+			throw new ObjectNotFoundException(
+					"Unable to find a StudentType representing an early "
+							+ "alert-assigned type.", "StudentType");
+		} else {
+			return studentType;
+		}
 	}
 }

@@ -23,15 +23,16 @@ import org.jasig.ssp.model.reference.StudentType;
 import org.jasig.ssp.service.ObjectNotFoundException;
 import org.jasig.ssp.service.ReferenceService;
 
+import java.util.UUID;
+
 /**
  * StudentType service
- * 
+ *
  * @author jon.adams
- * 
  */
-public interface StudentTypeService
-		extends ReferenceService<StudentType> {
-	
-	StudentType getByCode(@NotNull final String code) 
-			throws ObjectNotFoundException;
+public interface StudentTypeService extends ReferenceService<StudentType> {
+
+  StudentType getByCode(@NotNull final String code) throws ObjectNotFoundException;
+
+  StudentType getOrException(@NotNull UUID id) throws ObjectNotFoundException;
 }
