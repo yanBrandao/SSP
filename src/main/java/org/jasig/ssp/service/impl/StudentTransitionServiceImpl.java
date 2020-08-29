@@ -1,20 +1,31 @@
 package org.jasig.ssp.service.impl;
 
+import org.jasig.ssp.dao.PersonDao;
 import org.jasig.ssp.model.JournalEntry;
 import org.jasig.ssp.model.JournalEntryDetail;
 import org.jasig.ssp.service.ObjectNotFoundException;
 import org.jasig.ssp.service.PersonProgramStatusService;
 import org.jasig.ssp.service.StudentTransitionService;
+import org.jasig.ssp.transferobject.reports.BaseStudentReportTO;
+import org.jasig.ssp.transferobject.reports.JournalStepSearchFormTO;
+import org.jasig.ssp.util.sort.PagingWrapper;
+import org.jasig.ssp.util.sort.SortingAndPaging;
 import org.jasig.ssp.web.api.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StudentTransitionServiceImpl implements StudentTransitionService {
 
-    public StudentTransitionServiceImpl(PersonProgramStatusService personProgramStatusService){
+    public StudentTransitionServiceImpl(PersonProgramStatusService personProgramStatusService,
+                                        PersonDao personDao){
         this.personProgramStatusService = personProgramStatusService;
+        this.personDao = personDao;
     }
 
+    //1
+    private final PersonDao personDao;
+
+    //1
     private final PersonProgramStatusService personProgramStatusService;
 
     @Override
@@ -34,5 +45,12 @@ public class StudentTransitionServiceImpl implements StudentTransitionService {
                 return;
             }
         }
+    }
+
+  @Override
+  public PagingWrapper<BaseStudentReportTO> getBaseStudentReport(
+      JournalStepSearchFormTO personSearchForm, SortingAndPaging personSAndP)
+      throws ObjectNotFoundException {
+    return personDao.getStudentReportTOs(personSearchForm, personSAndP);
     }
 }

@@ -51,6 +51,7 @@ import java.util.UUID;
  * 	Meta Nº 2 - Atingir 50% dos pontos: 9 pontos
  * 			(Obtido com a criação de duas classes StudentComparator e a StudentTrasitionService)
  * 	Meta Nº 3 - Atingir 25% dos pontos: 4 pontos (Objetivo final)
+ * 			(Obtido 5 pontos com a remoção do PersonDao e classe JournalCaseReport)
  */
 @Service
 @Transactional
@@ -65,10 +66,6 @@ public class JournalEntryServiceImpl
 	//1
 	@Autowired
 	private StudentTransitionService studentTransitionService;
-
-	//1
-	@Autowired
-	private transient PersonDao personDao;
 
 	@Override
 	protected JournalEntryDao getDao() {
@@ -110,14 +107,14 @@ public class JournalEntryServiceImpl
 	public PagingWrapper<EntityStudentCountByCoachTO> getStudentJournalCountForCoaches(EntityCountByCoachSearchForm form){
 		return dao.getStudentJournalCountForCoaches(form);
 	}
-	
+
 	@Override
-	public PagingWrapper<JournalStepStudentReportTO> getJournalStepStudentReportTOsFromCriteria(JournalStepSearchFormTO personSearchForm,  
+	public PagingWrapper<JournalStepStudentReportTO> getJournalStepStudentReportTOsFromCriteria(JournalStepSearchFormTO personSearchForm,
 			SortingAndPaging sAndP){
-		return dao.getJournalStepStudentReportTOsFromCriteria(personSearchForm,  
+		return dao.getJournalStepStudentReportTOsFromCriteria(personSearchForm,
 				sAndP);
 	}
-	
+
  	@Override
  	public List<JournalCaseNotesStudentReportTO> getJournalCaseNoteStudentReportTOsFromCriteria
 			(JournalStepSearchFormTO personSearchForm, SortingAndPaging sAndP) throws ObjectNotFoundException{
@@ -125,19 +122,10 @@ public class JournalEntryServiceImpl
  		 final JournalCaseMap map = new JournalCaseMap(personsWithJournalEntries);
 
  		 final SortingAndPaging personSAndP = SortingAndPaging.createForSingleSortAll(ObjectStatus.ACTIVE, "lastName", "DESC") ;
- 		 final PagingWrapper<BaseStudentReportTO> persons = personDao.getStudentReportTOs(personSearchForm, personSAndP);
+ 		 final PagingWrapper<BaseStudentReportTO> persons = studentTransitionService.getBaseStudentReport(personSearchForm, personSAndP);
 
-		//1
- 		 if (persons == null) {
- 			 return personsWithJournalEntries;
- 		 }
-
-		//1
- 		 for (BaseStudentReportTO person:persons) {
- 		 	//1
-			StudentBelongsToSchool.checkStudentSchool(map, person, personSearchForm, personsWithJournalEntries,
-					getDao());
- 		 }
+ 		 //1
+		 JournalCaseReport.getReport(personsWithJournalEntries, map, persons, personSearchForm, dao);
 		 sortByStudentName(personsWithJournalEntries);
 
  		 return personsWithJournalEntries;
